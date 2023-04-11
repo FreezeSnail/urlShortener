@@ -1,4 +1,4 @@
-module github.com/FreezeSnail/urlShortner
+module github.com/FreezeSnail/urlShortener
 
 go 1.19
 
