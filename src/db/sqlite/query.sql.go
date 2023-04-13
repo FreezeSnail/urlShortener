@@ -23,7 +23,7 @@ type CreateUrlParams struct {
 	Url        string
 	Shorturl   string
 	Userid     sql.NullInt64
-	Createdate sql.NullTime
+	Createdate sql.NullInt64
 }
 
 func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, error) {

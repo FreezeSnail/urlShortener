@@ -38,14 +38,14 @@ func (db *SQLite) AddUrl(url string, short string) (*domain.UrlResponse, error) 
 		Url:        url,
 		Shorturl:   short,
 		Userid:     sql.NullInt64{Int64: 1, Valid: true},
-		Createdate: sql.NullTime{Time: time.Now().Unix(), Valid: true},
+		Createdate: sql.NullInt64{Int64: time.Now().Unix(), Valid: true},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to add url to db: %v", err)
 	}
 
 	return &domain.UrlResponse{
-		CreatedAt: resp.Createdate.Time,
+		CreatedAt: resp.Createdate.Int64,
 		Id:        resp.ID,
 		Url:       resp.Url,
 		ShortURL:  resp.Shorturl,
