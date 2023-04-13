@@ -22,15 +22,15 @@ WHERE id = ?;
 SELECT * FROM urls
 WHERE url = ? LIMIT 1;
 
--- name: ListAuthors :many
+-- name: ListUrls :many
 SELECT * FROM urls
 ORDER BY url;
 
 -- name: CreateUrl :one
 INSERT INTO urls (
-  url, shorturl
+  url, shorturl, userid, createdate
 ) VALUES (
-  ?, ?
+  ?, ?, ?, ?
 )
 RETURNING *;
 
