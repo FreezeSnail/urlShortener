@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS urls (
   url text      NOT NULL,
   shorturl  text NOT NULL,
   userid int,
-  createdate date,
+  createdate int,
   FOREIGN KEY(userid) REFERENCES users(id)
 );
