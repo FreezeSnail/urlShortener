@@ -10,7 +10,7 @@ import (
 
 func main() {
 
-	db, err := db.NewSQLite("urlshortner.db")
+	db, err := db.NewSQLite("urlshortener.db")
 	if err != nil {
 		panic(err)
 	}
