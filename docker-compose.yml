@@ -1,0 +1,19 @@
+version: '1'
+
+services:
+  sqlite3:
+    image: urlshortener/sqlite
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./db/:/root/db/
+
+  shortener:
+    image: urlshortener/urlshortener
+    stdin_open: true
+    tty: true
+    ports:
+      - "3000:3000"
+
+    volumes:
+      - ./db/:/root/db/

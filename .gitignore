@@ -5,6 +5,7 @@
 *.so
 *.dylib
 *.gen.go
+*urlShortener
 
 # Test binary, built with `go test -c`
 *.test
