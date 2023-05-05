@@ -103,18 +103,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /urls/{URL}:
     get:
       description: Gets a shortened url
-      operationId: getShortnedUrl
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ShortUrlRequest"
-
-              required:
-                  - url
+      operationId: getLongURLFromShort
+      parameters:
+        - in: path
+          name: URL
+          schema:
+            type: string
+          required: true
       responses:
         '200':
           description: Shortened Url Exists

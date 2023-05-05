@@ -22,11 +22,11 @@ WHERE id = ?;
 SELECT * FROM urls
 WHERE url = ? LIMIT 1;
 
--- name: ListUrls :many
+-- name: ListURLs :many
 SELECT * FROM urls
 ORDER BY url;
 
--- name: CreateUrl :one
+-- name: CreateURL :one
 INSERT INTO urls (
   url, shorturl, userid, createdate
 ) VALUES (
@@ -34,9 +34,13 @@ INSERT INTO urls (
 )
 RETURNING *;
 
---name GetShortUrl: one
+-- name: GetShortURLFromLong :one
 SELECT shorturl FROM urls
 WHERE url = ? LIMIT 1;
+
+-- name: GetLongURLFromShort :one
+SELECT url FROM urls
+WHERE shorturl = ? LIMIT 1;
 
 -- name: DeleteUrl :exec
 DELETE FROM urls

@@ -41,31 +41,15 @@ func (t URLShortnerServer) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (t URLShortnerServer) getShortnedUrl(w http.ResponseWriter, r *http.Request) {
-	var body domain.UrlRequest
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
-		panic(err)
-	}
-	// our logic to store the todo into a persistent layer
+func (t URLShortnerServer) GetLongURLFromShort(w http.ResponseWriter, r *http.Request, url string) {
 	fmt.Print("Request Recieved\n")
 
-	//check if url is in db -> should be in middleware?
-
-	//shorten url
-	short, err := shortener.Shorten(body.Url)
+	resp, err := t.DB.GetLongUrl(url)
 	if err != nil {
-		panic(err)
-	}
-
-	//store url in db
-	resp, err := t.DB.AddUrl(body.Url, short)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, err)
+		writeError(w, http.StatusNotFound, err)
 	}
 	//return shortened url
 	writeJSON(w, resp)
-
 }
 
 func writeError(w http.ResponseWriter, code int, err error) {

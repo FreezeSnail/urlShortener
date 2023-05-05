@@ -20,6 +20,8 @@ func main() {
 	}
 	h := api.Handler(s)
 
+	//TODO(SNAIL) Add background process to check token ttl
+
 	fmt.Print("Hello world\n")
 	http.ListenAndServe(":3000", h)
 	fmt.Print("goodbye\n")

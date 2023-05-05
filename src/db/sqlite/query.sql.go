@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createUrl = `-- name: CreateUrl :one
+const createURL = `-- name: CreateURL :one
 INSERT INTO urls (
   url, shorturl, userid, createdate
 ) VALUES (
@@ -19,15 +19,15 @@ INSERT INTO urls (
 RETURNING id, url, shorturl, userid, createdate
 `
 
-type CreateUrlParams struct {
+type CreateURLParams struct {
 	Url        string
 	Shorturl   string
 	Userid     sql.NullInt64
 	Createdate sql.NullInt64
 }
 
-func (q *Queries) CreateUrl(ctx context.Context, arg CreateUrlParams) (Url, error) {
-	row := q.db.QueryRowContext(ctx, createUrl,
+func (q *Queries) CreateURL(ctx context.Context, arg CreateURLParams) (Url, error) {
+	row := q.db.QueryRowContext(ctx, createURL,
 		arg.Url,
 		arg.Shorturl,
 		arg.Userid,
@@ -85,6 +85,30 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
+const getLongURLFromShort = `-- name: GetLongURLFromShort :one
+SELECT url FROM urls
+WHERE shorturl = ? LIMIT 1
+`
+
+func (q *Queries) GetLongURLFromShort(ctx context.Context, shorturl string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getLongURLFromShort, shorturl)
+	var url string
+	err := row.Scan(&url)
+	return url, err
+}
+
+const getShortURLFromLong = `-- name: GetShortURLFromLong :one
+SELECT shorturl FROM urls
+WHERE url = ? LIMIT 1
+`
+
+func (q *Queries) GetShortURLFromLong(ctx context.Context, url string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getShortURLFromLong, url)
+	var shorturl string
+	err := row.Scan(&shorturl)
+	return shorturl, err
+}
+
 const getURL = `-- name: GetURL :one
 SELECT id, url, shorturl, userid, createdate FROM urls
 WHERE url = ? LIMIT 1
@@ -115,13 +139,13 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
 	return i, err
 }
 
-const listUrls = `-- name: ListUrls :many
+const listURLs = `-- name: ListURLs :many
 SELECT id, url, shorturl, userid, createdate FROM urls
 ORDER BY url
 `
 
-func (q *Queries) ListUrls(ctx context.Context) ([]Url, error) {
-	rows, err := q.db.QueryContext(ctx, listUrls)
+func (q *Queries) ListURLs(ctx context.Context) ([]Url, error) {
+	rows, err := q.db.QueryContext(ctx, listURLs)
 	if err != nil {
 		return nil, err
 	}
