@@ -52,3 +52,20 @@ func (db *SQLite) AddUrl(url string, short string) (*domain.UrlResponse, error) 
 		User:      resp.Userid.Int64,
 	}, nil
 }
+
+func (db *SQLite) GetShortUrl(url string) (string, error) {
+	resp, err := db.q.GetShortnedUrl(context.TODO(), sqlite.CreateUrlParams{
+		Url: url,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to add url to db: %v", err)
+	}
+
+	return &domain.UrlResponse{
+		CreatedAt: resp.Createdate.Int64,
+		Id:        resp.ID,
+		Url:       resp.Url,
+		ShortURL:  resp.Shorturl,
+		User:      resp.Userid.Int64,
+	}, nil
+}

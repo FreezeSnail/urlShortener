@@ -34,6 +34,10 @@ INSERT INTO urls (
 )
 RETURNING *;
 
+--name GetShortUrl: one
+SELECT shorturl FROM urls
+WHERE url = ? LIMIT 1;
+
 -- name: DeleteUrl :exec
 DELETE FROM urls
 WHERE id = ?;

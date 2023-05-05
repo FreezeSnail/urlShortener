@@ -11,7 +11,7 @@ gen:
 
 
 build:
-	go build -o urlShortener src/cmd/api/main.go 
+	go build -o urlShortener ./src/cmd/api/main.go 
 
 urlshortener:
 	docker build -t urlshortener/urlshortener .

@@ -18,7 +18,6 @@ components:
           format: uuid
         url:
           type: string
-
       required:
         - user
         - url
@@ -37,7 +36,6 @@ components:
           type: string
         shortURL:
           type: string
-
         created_at:
           type: integer
           format: int64
@@ -48,6 +46,24 @@ components:
         - url
         - shortURL
         - created_at
+
+
+    ShortUrlRequest:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url
+
+
+    ShortUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url
 
     Error:
       type: object
@@ -60,6 +76,7 @@ components:
       required:
         - code
         - message
+
 
 paths:
   /urls:
@@ -86,3 +103,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+    get:
+      description: Gets a shortened url
+      operationId: getShortnedUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShortUrlRequest"
+
+              required:
+                  - url
+      responses:
+        '200':
+          description: Shortened Url Exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShortUrlResponse"
+        '404':
+          description: Url doesn's exist 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              
