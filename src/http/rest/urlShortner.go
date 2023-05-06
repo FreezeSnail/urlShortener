@@ -32,7 +32,7 @@ func (t URLShortnerServer) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//store url in db
-	resp, err := t.DB.AddUrl(body.Url, short)
+	resp, err := t.DB.AddUrl(r.Context(), body.Url, short)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err)
 	}
@@ -44,7 +44,7 @@ func (t URLShortnerServer) ShortenUrl(w http.ResponseWriter, r *http.Request) {
 func (t URLShortnerServer) GetLongURLFromShort(w http.ResponseWriter, r *http.Request, url string) {
 	fmt.Print("Request Recieved\n")
 
-	resp, err := t.DB.GetLongUrl(url)
+	resp, err := t.DB.GetLongUrl(r.Context(), url)
 	if err != nil {
 		writeError(w, http.StatusNotFound, err)
 	}

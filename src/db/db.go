@@ -33,8 +33,8 @@ func NewSQLite(url string) (*SQLite, error) {
 	}, nil
 }
 
-func (db *SQLite) AddUrl(url string, short string) (*domain.UrlResponse, error) {
-	resp, err := db.q.CreateURL(context.TODO(), sqlite.CreateURLParams{
+func (db *SQLite) AddUrl(ctx context.Context, url string, short string) (*domain.UrlResponse, error) {
+	resp, err := db.q.CreateURL(ctx, sqlite.CreateURLParams{
 		Url:        url,
 		Shorturl:   short,
 		Userid:     sql.NullInt64{Int64: 1, Valid: true},
@@ -53,8 +53,8 @@ func (db *SQLite) AddUrl(url string, short string) (*domain.UrlResponse, error) 
 	}, nil
 }
 
-func (db *SQLite) GetLongUrl(url string) (*domain.ShortUrlResponse, error) {
-	resp, err := db.q.GetLongURLFromShort(context.TODO(), url)
+func (db *SQLite) GetLongUrl(ctx context.Context, url string) (*domain.ShortUrlResponse, error) {
+	resp, err := db.q.GetLongURLFromShort(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add url to db: %v", err)
 	}
