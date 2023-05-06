@@ -33,6 +33,10 @@ func NewSQLite(url string) (*SQLite, error) {
 	}, nil
 }
 
+func (db *SQLite) Close() {
+	db.db.Close()
+}
+
 func (db *SQLite) AddUrl(ctx context.Context, url string, short string) (*domain.UrlResponse, error) {
 	resp, err := db.q.CreateURL(ctx, sqlite.CreateURLParams{
 		Url:        url,

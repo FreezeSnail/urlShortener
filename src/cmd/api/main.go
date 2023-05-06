@@ -11,6 +11,7 @@ import (
 func main() {
 
 	db, err := db.NewSQLite("urlshortener.db")
+	defer db.Close()
 	if err != nil {
 		panic(err)
 	}
