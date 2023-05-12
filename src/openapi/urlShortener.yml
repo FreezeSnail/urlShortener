@@ -13,12 +13,9 @@ components:
     ShortenURLRequest:
       type: object
       properties:
-        apiKey:
-          type: string
         url:
           type: string
       required:
-        - apiKey
         - url
 
     ShortenURLResponse:
@@ -107,11 +104,20 @@ components:
         - code
         - message
 
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
 paths:
   /urls:
+    x-go-middlewares: [validateAPIKey]
     post:
       description: Creates a new short url
       operationId: shortenUrl
+      security:
+        - ApiKeyAuth: []
       requestBody:
         description: Shorten url
         required: true
@@ -133,9 +139,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
   /urls/{URL}:
+    x-go-middlewares: [validateAPIKey]
     get:
       description: Gets a shortened url
       operationId: getLongURLFromShort
+      security:
+        - ApiKeyAuth: []
       parameters:
         - in: path
           name: URL

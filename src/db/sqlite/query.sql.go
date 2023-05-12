@@ -10,6 +10,18 @@ import (
 	"database/sql"
 )
 
+const aPIKeyValid = `-- name: APIKeyValid :one
+SELECT COUNT(DISTINCT apikey) FROM users 
+WHERE apikey=?
+`
+
+func (q *Queries) APIKeyValid(ctx context.Context, apikey string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, aPIKeyValid, apikey)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createURL = `-- name: CreateURL :one
 INSERT INTO urls (
   url, shorturl, userid, createdate

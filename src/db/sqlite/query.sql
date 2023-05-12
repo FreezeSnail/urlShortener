@@ -17,6 +17,11 @@ WHERE id = ?;
 SELECT password FROM users
 where name=?;
 
+-- name: APIKeyValid :one
+SELECT COUNT(DISTINCT apikey) FROM users 
+WHERE apikey=?;
+
+
 -- name: GetURL :one
 SELECT shorturl FROM urls
 WHERE url = ? LIMIT 1;

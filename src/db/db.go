@@ -93,6 +93,15 @@ func (db *SQLite) GetAPIKey(ctx context.Context, name, hashedPass string) (strin
 	return resp, nil
 }
 
+func (db *SQLite) ValidateAPIKey(ctx context.Context, key string) (bool, error) {
+	resp, err := db.q.APIKeyValid(ctx, key)
+	if err != nil {
+		return false, fmt.Errorf("failed to get password hash: %v", err)
+	}
+
+	return resp > 0, nil
+}
+
 func (db *SQLite) GetHashedPassword(ctx context.Context, name string) (string, error) {
 	resp, err := db.q.GetHashPassword(ctx, name)
 	if err != nil {

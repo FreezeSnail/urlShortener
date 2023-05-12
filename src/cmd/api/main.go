@@ -8,6 +8,7 @@ import (
 	"github.com/FreezeSnail/urlShortener/src/db"
 	api "github.com/FreezeSnail/urlShortener/src/http"
 	domain "github.com/FreezeSnail/urlShortener/src/http/domain"
+	middles "github.com/FreezeSnail/urlShortener/src/http/middles"
 	"github.com/go-chi/chi"
 	"golang.org/x/exp/slog"
 )
@@ -27,8 +28,13 @@ func main() {
 		DB:  db,
 		Log: logger,
 	}
+
+	m := middles.Middleware{
+		DB:  db,
+		Log: logger,
+	}
 	r := chi.NewRouter()
-	r.Mount("/", domain.Handler(&s))
+	r.Mount("/", domain.Handler(&s, domain.WithMiddleware("validateAPIKey", m.ValidateAPIKey())))
 	//h := api.Handler(s)
 
 	//TODO(SNAIL) Add background process to check token ttl
