@@ -17,7 +17,8 @@ type Url struct {
 }
 
 type User struct {
-	ID    int64
-	Name  string
-	Email string
+	ID       int64
+	Name     string
+	Password string
+	Apikey   string
 }

@@ -4,9 +4,9 @@ all: db urlshortener
 dev: gen build
 
 gen:
-	oapi-codegen -generate chi-server -o src/http/rest/urlShortner.gen.go -package urlShortener src/openapi/urlShortener.yml
-	oapi-codegen -generate types -o src/domain/urlShortener_types.gen.go -package domain src/openapi/urlShortener.yml
-	go generate
+	goapi-gen -generate server -o src/http/domain/urlShortner.gen.go -package domain src/openapi/urlShortener.yml
+	goapi-gen -generate types -o src/http/domain/urlShortener_types.gen.go -package domain src/openapi/urlShortener.yml
+	go generate src/db
 
 
 

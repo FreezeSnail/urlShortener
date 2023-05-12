@@ -1,25 +1,24 @@
--- name: GetUser :one
-SELECT * FROM users
-WHERE id = ? LIMIT 1;
-
--- name: ListUsers :many
-SELECT * FROM users
-ORDER BY name;
-
--- name: CreateUser :one
+-- name: CreateUser :exec
 INSERT INTO users (
-  name, email
+  name, password, apikey
 ) VALUES (
-  ?, ?
-)
-RETURNING *;
+  ?, ?, ?
+);
+
+-- name: GetAPIKey :one
+SELECT apikey FROM users
+WHERE name=? AND password=?;
 
 -- name: DeleteUser :exec
 DELETE FROM users
 WHERE id = ?;
 
+-- name: GetHashPassword :one
+SELECT password FROM users
+where name=?;
+
 -- name: GetURL :one
-SELECT * FROM urls
+SELECT shorturl FROM urls
 WHERE url = ? LIMIT 1;
 
 -- name: ListURLs :many

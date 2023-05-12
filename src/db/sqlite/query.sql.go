@@ -44,25 +44,23 @@ func (q *Queries) CreateURL(ctx context.Context, arg CreateURLParams) (Url, erro
 	return i, err
 }
 
-const createUser = `-- name: CreateUser :one
+const createUser = `-- name: CreateUser :exec
 INSERT INTO users (
-  name, email
+  name, password, apikey
 ) VALUES (
-  ?, ?
+  ?, ?, ?
 )
-RETURNING id, name, email
 `
 
 type CreateUserParams struct {
-	Name  string
-	Email string
+	Name     string
+	Password string
+	Apikey   string
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Name, arg.Email)
-	var i User
-	err := row.Scan(&i.ID, &i.Name, &i.Email)
-	return i, err
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser, arg.Name, arg.Password, arg.Apikey)
+	return err
 }
 
 const deleteUrl = `-- name: DeleteUrl :exec
@@ -83,6 +81,35 @@ WHERE id = ?
 func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
+}
+
+const getAPIKey = `-- name: GetAPIKey :one
+SELECT apikey FROM users
+WHERE name=? AND password=?
+`
+
+type GetAPIKeyParams struct {
+	Name     string
+	Password string
+}
+
+func (q *Queries) GetAPIKey(ctx context.Context, arg GetAPIKeyParams) (string, error) {
+	row := q.db.QueryRowContext(ctx, getAPIKey, arg.Name, arg.Password)
+	var apikey string
+	err := row.Scan(&apikey)
+	return apikey, err
+}
+
+const getHashPassword = `-- name: GetHashPassword :one
+SELECT password FROM users
+where name=?
+`
+
+func (q *Queries) GetHashPassword(ctx context.Context, name string) (string, error) {
+	row := q.db.QueryRowContext(ctx, getHashPassword, name)
+	var password string
+	err := row.Scan(&password)
+	return password, err
 }
 
 const getLongURLFromShort = `-- name: GetLongURLFromShort :one
@@ -110,33 +137,15 @@ func (q *Queries) GetShortURLFromLong(ctx context.Context, url string) (string, 
 }
 
 const getURL = `-- name: GetURL :one
-SELECT id, url, shorturl, userid, createdate FROM urls
+SELECT shorturl FROM urls
 WHERE url = ? LIMIT 1
 `
 
-func (q *Queries) GetURL(ctx context.Context, url string) (Url, error) {
+func (q *Queries) GetURL(ctx context.Context, url string) (string, error) {
 	row := q.db.QueryRowContext(ctx, getURL, url)
-	var i Url
-	err := row.Scan(
-		&i.ID,
-		&i.Url,
-		&i.Shorturl,
-		&i.Userid,
-		&i.Createdate,
-	)
-	return i, err
-}
-
-const getUser = `-- name: GetUser :one
-SELECT id, name, email FROM users
-WHERE id = ? LIMIT 1
-`
-
-func (q *Queries) GetUser(ctx context.Context, id int64) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
-	var i User
-	err := row.Scan(&i.ID, &i.Name, &i.Email)
-	return i, err
+	var shorturl string
+	err := row.Scan(&shorturl)
+	return shorturl, err
 }
 
 const listURLs = `-- name: ListURLs :many
@@ -160,34 +169,6 @@ func (q *Queries) ListURLs(ctx context.Context) ([]Url, error) {
 			&i.Userid,
 			&i.Createdate,
 		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const listUsers = `-- name: ListUsers :many
-SELECT id, name, email FROM users
-ORDER BY name
-`
-
-func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
-	rows, err := q.db.QueryContext(ctx, listUsers)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []User
-	for rows.Next() {
-		var i User
-		if err := rows.Scan(&i.ID, &i.Name, &i.Email); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

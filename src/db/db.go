@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/FreezeSnail/urlShortener/src/db/sqlite"
-	domain "github.com/FreezeSnail/urlShortener/src/domain"
-
+	domain "github.com/FreezeSnail/urlShortener/src/http/domain"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -37,7 +36,7 @@ func (db *SQLite) Close() {
 	db.db.Close()
 }
 
-func (db *SQLite) AddUrl(ctx context.Context, url string, short string) (*domain.UrlResponse, error) {
+func (db *SQLite) AddUrl(ctx context.Context, url string, short string) (*domain.ShortenURLResponse, error) {
 	resp, err := db.q.CreateURL(ctx, sqlite.CreateURLParams{
 		Url:        url,
 		Shorturl:   short,
@@ -48,22 +47,57 @@ func (db *SQLite) AddUrl(ctx context.Context, url string, short string) (*domain
 		return nil, fmt.Errorf("failed to add url to db: %v", err)
 	}
 
-	return &domain.UrlResponse{
+	return &domain.ShortenURLResponse{
 		CreatedAt: resp.Createdate.Int64,
-		Id:        resp.ID,
-		Url:       resp.Url,
+		ID:        resp.ID,
+		URL:       resp.Url,
 		ShortURL:  resp.Shorturl,
 		User:      resp.Userid.Int64,
 	}, nil
 }
 
-func (db *SQLite) GetLongUrl(ctx context.Context, url string) (*domain.ShortUrlResponse, error) {
+func (db *SQLite) GetLongUrl(ctx context.Context, url string) (*domain.ShortURLResponse, error) {
 	resp, err := db.q.GetLongURLFromShort(ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add url to db: %v", err)
 	}
 
-	return &domain.ShortUrlResponse{
-		Url: resp,
+	return &domain.ShortURLResponse{
+		URL: resp,
 	}, nil
+}
+
+func (db *SQLite) CreateUser(ctx context.Context, user, pass, key string) error {
+	params := sqlite.CreateUserParams{
+		Name:     user,
+		Password: pass,
+		Apikey:   key,
+	}
+	err := db.q.CreateUser(ctx, params)
+	if err != nil {
+		return fmt.Errorf("failed to create user: %v", err)
+	}
+	return nil
+}
+
+func (db *SQLite) GetAPIKey(ctx context.Context, name, hashedPass string) (string, error) {
+	params := sqlite.GetAPIKeyParams{
+		Name:     name,
+		Password: hashedPass,
+	}
+	resp, err := db.q.GetAPIKey(ctx, params)
+	if err != nil {
+		return "", fmt.Errorf("failed to get password hash: %v", err)
+	}
+
+	return resp, nil
+}
+
+func (db *SQLite) GetHashedPassword(ctx context.Context, name string) (string, error) {
+	resp, err := db.q.GetHashPassword(ctx, name)
+	if err != nil {
+		return "", fmt.Errorf("failed to get password hash: %v", err)
+	}
+
+	return resp, nil
 }

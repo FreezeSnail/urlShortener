@@ -10,20 +10,18 @@ servers:
 
 components:
   schemas:
-    urlRequest:
+    ShortenURLRequest:
       type: object
       properties:
-        user:
+        apiKey:
           type: string
-          format: uuid
         url:
           type: string
       required:
-        - user
+        - apiKey
         - url
 
-
-    urlResponse:
+    ShortenURLResponse:
       type: object
       properties:
         id:
@@ -47,7 +45,6 @@ components:
         - shortURL
         - created_at
 
-
     ShortUrlRequest:
       type: object
       properties:
@@ -56,7 +53,6 @@ components:
       required:
         - url
 
-
     ShortUrlResponse:
       type: object
       properties:
@@ -64,6 +60,40 @@ components:
           type: string
       required:
         - url
+
+    SignUpRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    SignUpResponse:
+      type: object
+      properties:
+        apikey:
+          type: string
+
+    SignInRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    SignInResponse:
+      type: object
+      properties:
+        apikey:
+          type: string
 
     Error:
       type: object
@@ -77,11 +107,10 @@ components:
         - code
         - message
 
-
 paths:
   /urls:
     post:
-      description: Creates a new short url 
+      description: Creates a new short url
       operationId: shortenUrl
       requestBody:
         description: Shorten url
@@ -89,20 +118,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/urlRequest'
+              $ref: "#/components/schemas/ShortenURLRequest"
       responses:
-        '201': 
+        "201":
           description: Shortened url creation response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/urlResponse'
+                $ref: "#/components/schemas/ShortenURLResponse"
         default:
-          description: unexpected error 
+          description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
   /urls/{URL}:
     get:
       description: Gets a shortened url
@@ -114,16 +143,65 @@ paths:
             type: string
           required: true
       responses:
-        '200':
+        "200":
           description: Shortened Url Exists
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ShortUrlResponse"
-        '404':
-          description: Url doesn's exist 
+        "404":
+          description: Url doesn's exist
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-              
+                $ref: "#/components/schemas/Error"
+
+  /user/signup:
+    post:
+      description: Sign up new user
+      operationId: postSignUp
+      requestBody:
+        description: signup user
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        "201":
+          description: user api key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignUpResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /user/signin:
+    post:
+      description: Sign in a user
+      operationId: postSignIn
+      requestBody:
+        description: signin
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        "201":
+          description: user api key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
